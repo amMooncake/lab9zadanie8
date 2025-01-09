@@ -16,4 +16,6 @@ public class PersonView
     public int SilverMedals { get; set; }
     public int BronzeMedals { get; set; }
     
+    public int NumberOfCompetitions { get; set; }
+    
 }

@@ -1,18 +1,17 @@
 @model PaginatedList<Webapp.Models.Olympics.PersonView>
 
 @{
-    ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Index</h1>
+<h1>Olympic Games</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+
+
 <table class="table">
     <thead>
     <tr>
+        <th>id</th>
         <th>
             @Html.DisplayNameFor(model => model[0].FullName)
         </th>
@@ -34,39 +33,47 @@
         <th>
             Bronze Medals
         </th>
+        <th>
+            Number of Competitions
+        </th>
     </tr>
     </thead>
     <tbody>
     @foreach (var item in Model) {
         <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.FullName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Gender)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Height)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Weight)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.GoldMedals)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.SilverMedals)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.BronzeMedals)
-            </td>
-            
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
+        <td> @item.Id</td>
+        <td>
+            @Html.DisplayFor(modelItem => item.FullName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Gender)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Height)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Weight)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.GoldMedals)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.SilverMedals)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.BronzeMedals)
+        </td>
+
+        <td>
+            <a asp-action="CompetitionList" asp-route-id="@item.Id"> @Html.DisplayFor(modelItem => item.NumberOfCompetitions)</a>
+        </td>
+
+        <td>
+            <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+            <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+            <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+        </td>
+    </tr>
     }
     </tbody>
 </table>

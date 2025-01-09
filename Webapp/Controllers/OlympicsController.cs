@@ -34,27 +34,46 @@ namespace Webapp.Controllers
                     GoldMedals = _context.CompetitorEvents.Count(ce => ce.MedalId == 1 && ce.CompetitorId == b.Id),
                     SilverMedals = _context.CompetitorEvents.Count(ce => ce.MedalId == 2 && ce.CompetitorId == b.Id),
                     BronzeMedals = _context.CompetitorEvents.Count(ce => ce.MedalId == 3 & ce.CompetitorId == b.Id),
+                    NumberOfCompetitions = _context.CompetitorEvents.Count(ce => ce.CompetitorId == b.Id)
                 })
                 .Skip((page - 1) * size) 
                 .Take(size)
                 .ToList();
             
-
+            
             var totalCount  =  await _context.Persons.CountAsync();
             var  paginatedList  = new  PaginatedList<PersonView>(personQuery,  totalCount, page,   size);  
-            return  View(paginatedList); 
+            return View(paginatedList); 
         }
 
-        // GET: Olympics/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> CompetitionList(int id)
         {
-            if (id == null)
+            var competitionList = await _context.CompetitorEvents
+                .Where(ce => ce.CompetitorId == id)
+                .Select(ce => new CompetitorEventsView()
+                {
+                    Name = ce.Competitor.Person.FullName,
+                    SportName =  ce.Event.Sport.SportName,
+                    EventName = ce.Event.EventName,
+                    CitiName = _context.GamesCities.FirstOrDefault(gc => gc.GamesId == ce.Competitor.GamesId).City.CityName,
+                    Season = ce.Competitor.Games.Season,
+                    Age = ce.Competitor.Age,
+                    Medal = ce.Medal.MedalName
+                }).ToListAsync();
+            
+            return View(competitionList.AsQueryable());
+        }
+        
+        // GET: Olympics/Details/5
+        public async Task<IActionResult> Details(int? PersonId)
+        {
+            if (PersonId == null)
             {
                 return NotFound();
             }
 
             var person = await _context.Persons
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.Id == PersonId);
             if (person == null)
             {
                 return NotFound();
@@ -86,14 +105,14 @@ namespace Webapp.Controllers
         }
 
         // GET: Olympics/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(int? PersonId)
         {
-            if (id == null)
+            if (PersonId == null)
             {
                 return NotFound();
             }
 
-            var person = await _context.Persons.FindAsync(id);
+            var person = await _context.Persons.FindAsync(PersonId);
             if (person == null)
             {
                 return NotFound();
@@ -106,9 +125,9 @@ namespace Webapp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,FullName,Gender,Height,Weight")] Person person)
+        public async Task<IActionResult> Edit(int PersonId, [Bind("Id,FullName,Gender,Height,Weight")] Person person)
         {
-            if (id != person.Id)
+            if (PersonId != person.Id)
             {
                 return NotFound();
             }
@@ -137,15 +156,15 @@ namespace Webapp.Controllers
         }
 
         // GET: Olympics/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(int? PersonId)
         {
-            if (id == null)
+            if (PersonId == null)
             {
                 return NotFound();
             }
 
             var person = await _context.Persons
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.Id == PersonId);
             if (person == null)
             {
                 return NotFound();
@@ -157,9 +176,9 @@ namespace Webapp.Controllers
         // POST: Olympics/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int PersonId)
         {
-            var person = await _context.Persons.FindAsync(id);
+            var person = await _context.Persons.FindAsync(PersonId);
             if (person != null)
             {
                 _context.Persons.Remove(person);
