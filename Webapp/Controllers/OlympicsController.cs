@@ -21,19 +21,28 @@ namespace Webapp.Controllers
         }
 
         // GET: Olympics
-        public async Task<IActionResult> Index(int? page)
+        public async Task<IActionResult> Index(int page = 1, int size = 20)
         {
-            int pageSize = 10;
-            int pageNumber = page ?? 1;
-
-
-            var person = _context.Persons.AsQueryable();
+            var personQuery = _context.Persons
+                .Select(b => new PersonView()
+                {
+                    Id = b.Id,
+                    FullName = b.FullName,
+                    Gender = b.Gender,
+                    Height = b.Height,
+                    Weight = b.Weight,
+                    GoldMedals = _context.CompetitorEvents.Count(ce => ce.MedalId == 1 && ce.CompetitorId == b.Id),
+                    SilverMedals = _context.CompetitorEvents.Count(ce => ce.MedalId == 2 && ce.CompetitorId == b.Id),
+                    BronzeMedals = _context.CompetitorEvents.Count(ce => ce.MedalId == 3 & ce.CompetitorId == b.Id),
+                })
+                .Skip((page - 1) * size) 
+                .Take(size)
+                .ToList();
             
-                
-            // return View(await _context.People.ToListAsync());
-            var paginatedList = await PaginatedList<Person>.CreateAsync(person, pageNumber, pageSize);
-            
-            return View(paginatedList);
+
+            var totalCount  =  await _context.Persons.CountAsync();
+            var  paginatedList  = new  PaginatedList<PersonView>(personQuery,  totalCount, page,   size);  
+            return  View(paginatedList); 
         }
 
         // GET: Olympics/Details/5

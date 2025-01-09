@@ -1,4 +1,4 @@
-@model PaginatedList<Webapp.Models.Olympics.Person>
+@model PaginatedList<Webapp.Models.Olympics.PersonView>
 
 @{
     ViewData["Title"] = "Index";
@@ -25,7 +25,15 @@
         <th>
             @Html.DisplayNameFor(model => model[0].Weight)
         </th>
-        <th></th>
+        <th>
+            Gold Medals
+        </th>
+        <th>
+            Silver Medals
+        </th>
+        <th>
+            Bronze Medals
+        </th>
     </tr>
     </thead>
     <tbody>
@@ -43,6 +51,16 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Weight)
             </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.GoldMedals)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SilverMedals)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.BronzeMedals)
+            </td>
+            
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.Id">Details</a> |

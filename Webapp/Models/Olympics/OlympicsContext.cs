@@ -195,6 +195,7 @@ public partial class OlympicsContext : DbContext
                 .HasDefaultValueSql("NULL")
                 .HasColumnName("weight");
         });
+        
 
         modelBuilder.Entity<PersonRegion>(entity =>
         {
@@ -225,7 +226,9 @@ public partial class OlympicsContext : DbContext
                 .HasDefaultValueSql("NULL")
                 .HasColumnName("sport_name");
         });
-
+        
+        
+        
         OnModelCreatingPartial(modelBuilder);
     }
 
