@@ -2,6 +2,7 @@
 
 public class CompetitorEventsView
 {
+    public Person Person { get; set; }
     public string Name { get; set; }
     public string SportName { get; set; }
     public string? EventName { get; set; }

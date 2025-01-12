@@ -14,7 +14,6 @@ namespace Webapp.Controllers
     public class OlympicsController : Controller
     {
         private readonly OlympicsContext _context;
-
         public OlympicsController(OlympicsContext context)
         {
             _context = context;
@@ -52,6 +51,7 @@ namespace Webapp.Controllers
                 .Where(ce => ce.CompetitorId == id)
                 .Select(ce => new CompetitorEventsView()
                 {
+                    Person = ce.Competitor.Person,
                     Name = ce.Competitor.Person.FullName,
                     SportName =  ce.Event.Sport.SportName,
                     EventName = ce.Event.EventName,
@@ -81,11 +81,62 @@ namespace Webapp.Controllers
 
             return View(person);
         }
+        
+        public async Task<List<SelectListItem>> GetAllSportNamesAsync()
+        {
+            var sports = await _context.Sports
+                .Select(s => new SelectListItem
+                {
+                    Value = s.SportName,
+                    Text = s.SportName
+                }).ToListAsync();
+
+            return sports;
+        }
+        
+        public async Task<List<SelectListItem>> GetAllEventNamesAsync()
+        {
+            var events = await _context.Events
+                .Select(s => new SelectListItem
+                {
+                    Value = s.EventName,
+                    Text = s.EventName
+                }).ToListAsync();
+
+            return events;
+        }
+        
+        public async Task<List<SelectListItem>> GetAllGameNamesAsync()
+        {
+            var events = await _context.Games
+                .Select(s => new SelectListItem
+                {
+                    Value = s.GamesName,
+                    Text = s.GamesName
+                }).ToListAsync();
+
+            return events;
+        }
+        
+
 
         // GET: Olympics/Create
-        public IActionResult Create()
+        public async Task<ViewResult> Create(int id)
         {
-            return View();
+            
+            var person =  _context.Persons.FindAsync(id);
+            var sports =  GetAllSportNamesAsync();
+            var events =  GetAllEventNamesAsync();
+            var gameNames = GetAllGameNamesAsync();
+            var competition = new CreateCompetitorEvent()
+            {
+                Person = person.Result,
+                Sports =  sports.Result,
+                Events = events.Result,
+                GameNames = gameNames.Result,
+                Age = 0,
+            };
+            return View(competition);
         }
 
         // POST: Olympics/Create
@@ -93,15 +144,31 @@ namespace Webapp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,FullName,Gender,Height,Weight")] Person person)
+        public async Task<IActionResult> Create(CreateCompetitorEvent model)
         {
-            if (ModelState.IsValid)
+
+            var maxId = await _context.GamesCompetitors.MaxAsync(s => (int?)s.Id) ?? 0;
+            var personId = model.Person.Id;
+            var gameId =  _context.Games.FirstOrDefault(g => g.GamesName == model.GameNames.First().Value).Id;
+            var age = model.Age;
+            var game = _context.Games.FirstOrDefault(g => g.Id == gameId);
+            var thisPerson = model.Person;
+            
+            var newGame = new GamesCompetitor()
             {
-                _context.Add(person);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(person);
+                Id = maxId + 1,
+                PersonId = personId,
+                GamesId = gameId,
+                Age = age,
+                Games = game,
+                Person = thisPerson
+            };
+            
+            
+            
+            _context.GamesCompetitors.Add(newGame);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Olympics/Edit/5

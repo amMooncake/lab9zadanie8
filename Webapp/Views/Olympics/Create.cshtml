@@ -1,29 +1,70 @@
-@model Webapp.Models.Olympics.Person
+@model Webapp.Models.Olympics.CreateCompetitorEvent
 
-@{
-    ViewData["Title"] = "Create";
-    Layout = "~/Views/Shared/_Layout.cshtml";
-}
+<h1>Stwórz udziału dla</h1>
 
-<h1>Create</h1>
+<h4> @Model.Person.FullName</h4>
 
-<h4>Person</h4>
+
+
 <hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Id" class="control-label"></label>
-                <input asp-for="Id" class="form-control" />
-                <span asp-validation-for="Id" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+
+
+<form asp-action="Create" method="post">
+    
+    <input type="hidden" asp-for="Person.Id" aria-selected="true" />
+    <input type="hidden" asp-for="Person" aria-selected="true" />
+    <input type="hidden" asp-for="Person.FullName"  />
+    
+    
+    
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+    <div class="form-group">
+        <label asp-for="Sports">Nazwa dyscypliny</label>
+        <select asp-for="Sports" class="form-control" required>
+            <option value="">-- Wybierz Dyscyplinę --</option>
+            @foreach (var sport in Model.Sports)
+            {
+                <option value="@sport.Value">@sport.Text</option>
+            }
+        </select>
     </div>
-</div>
+
+    <div class="form-group">
+        <label asp-for="Events">Nazwa wydarzenia</label>
+        <select asp-for="Events" class="form-control" required>
+            <option value="">-- Wybierz wydarzenie --</option>
+            @foreach (var e in Model.Events)
+            {
+                <option value="@e.Value">@e.Text</option>
+            }
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="GameNames">Nazwa Olimpiady</label>
+        <select asp-for="GameNames" class="form-control" required>
+            <option value="">-- Nazwa Olimpiady --</option>
+            @foreach (var e in Model.GameNames)
+            {
+                <option value="@e.Value">@e.Text</option>
+            }
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Age">wiek sportowca w czasie wydarzenia</label>
+        <input asp-for="Age" class="form-control" required/>
+    </div>
+
+
+    <button type="submit" class="btn btn-primary">Zapisz</button>
+
+    @section Scripts {
+        @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+    }
+
+</form>
 
 <div>
     <a asp-action="Index">Back to List</a>
