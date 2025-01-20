@@ -121,22 +121,10 @@ namespace Webapp.Controllers
 
 
         // GET: Olympics/Create
-        public async Task<ViewResult> Create(int id)
+        public Task<ViewResult> Create(int id)
         {
-            
-            var person =  _context.Persons.FindAsync(id);
-            var sports =  GetAllSportNamesAsync();
-            var events =  GetAllEventNamesAsync();
-            var gameNames = GetAllGameNamesAsync();
-            var competition = new CreateCompetitorEvent()
-            {
-                Person = person.Result,
-                Sports =  sports.Result,
-                Events = events.Result,
-                GameNames = gameNames.Result,
-                Age = 0,
-            };
-            return View(competition);
+
+            return null;
         }
 
         // POST: Olympics/Create
@@ -144,31 +132,9 @@ namespace Webapp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(CreateCompetitorEvent model)
+        public Task<IActionResult> Create()
         {
-
-            var maxId = await _context.GamesCompetitors.MaxAsync(s => (int?)s.Id) ?? 0;
-            var personId = model.Person.Id;
-            var gameId =  _context.Games.FirstOrDefault(g => g.GamesName == model.GameNames.First().Value).Id;
-            var age = model.Age;
-            var game = _context.Games.FirstOrDefault(g => g.Id == gameId);
-            var thisPerson = model.Person;
-            
-            var newGame = new GamesCompetitor()
-            {
-                Id = maxId + 1,
-                PersonId = personId,
-                GamesId = gameId,
-                Age = age,
-                Games = game,
-                Person = thisPerson
-            };
-            
-            
-            
-            _context.GamesCompetitors.Add(newGame);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return null;
         }
 
         // GET: Olympics/Edit/5
