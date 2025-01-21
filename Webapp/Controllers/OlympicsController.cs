@@ -65,15 +65,15 @@ namespace Webapp.Controllers
         }
         
         // GET: Olympics/Details/5
-        public async Task<IActionResult> Details(int? PersonId)
+        public async Task<IActionResult> Details(int? id)
         {
-            if (PersonId == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
             var person = await _context.Persons
-                .FirstOrDefaultAsync(m => m.Id == PersonId);
+                .FirstOrDefaultAsync(m => m.Id == id);
             if (person == null)
             {
                 return NotFound();
@@ -81,71 +81,83 @@ namespace Webapp.Controllers
 
             return View(person);
         }
-        
-        public async Task<List<SelectListItem>> GetAllSportNamesAsync()
+
+        public IActionResult Create(int id)
         {
-            var sports = await _context.Sports
+            var competitorEvent = new CompetitorEventCreateModel();
+            competitorEvent.Person = _context.Persons.Find(id);
+            competitorEvent.Sports = _context.Sports
                 .Select(s => new SelectListItem
                 {
                     Value = s.SportName,
                     Text = s.SportName
-                }).ToListAsync();
-
-            return sports;
-        }
-        
-        public async Task<List<SelectListItem>> GetAllEventNamesAsync()
-        {
-            var events = await _context.Events
-                .Select(s => new SelectListItem
+                }).ToList();
+            competitorEvent.Events = _context.Events
+                .Select(e => new SelectListItem
                 {
-                    Value = s.EventName,
-                    Text = s.EventName
-                }).ToListAsync();
-
-            return events;
-        }
-        
-        public async Task<List<SelectListItem>> GetAllGameNamesAsync()
-        {
-            var events = await _context.Games
-                .Select(s => new SelectListItem
+                    Value = e.EventName,
+                    Text = e.EventName
+                }).ToList();
+            competitorEvent.Olympics = _context.Games
+                .Select(o => new SelectListItem
                 {
-                    Value = s.GamesName,
-                    Text = s.GamesName
-                }).ToListAsync();
-
-            return events;
-        }
-        
-
-
-        // GET: Olympics/Create
-        public Task<ViewResult> Create(int id)
-        {
-
-            return null;
+                    Value = o.GamesName,
+                    Text = o.GamesName
+                }).ToList();
+            
+            return View(competitorEvent);
         }
 
-        // POST: Olympics/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public Task<IActionResult> Create()
+        public async Task<IActionResult> Create(CompetitorEventCreateModel competitorEvent, int page = 1, int size = 20)
         {
-            return null;
+            if (ModelState.IsValid)
+            {
+                var newCompetitorEvent = new CompetitorEvent
+                {
+                    
+                    CompetitorId = competitorEvent.Person.Id,
+                    EventId = _context.Events.First(e => e.EventName == competitorEvent.EventName).Id,
+                };
+
+                _context.Add(newCompetitorEvent);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index), new { page, size });
+            }
+
+            // Repopulate dropdown lists if model state is invalid
+            competitorEvent.Sports = _context.Sports
+                .Select(s => new SelectListItem
+                {
+                    Value = s.SportName,
+                    Text = s.SportName
+                }).ToList();
+            competitorEvent.Events = _context.Events
+                .Select(e => new SelectListItem
+                {
+                    Value = e.EventName,
+                    Text = e.EventName
+                }).ToList();
+            competitorEvent.Olympics = _context.Games
+                .Select(o => new SelectListItem
+                {
+                    Value = o.GamesName,
+                    Text = o.GamesName
+                }).ToList();
+
+            return RedirectToAction(nameof(Index), new { page, size });
         }
 
         // GET: Olympics/Edit/5
-        public async Task<IActionResult> Edit(int? PersonId)
+        public async Task<IActionResult> Edit(int? id)
         {
-            if (PersonId == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var person = await _context.Persons.FindAsync(PersonId);
+            var person = await _context.Persons.FindAsync(id);
             if (person == null)
             {
                 return NotFound();
@@ -158,9 +170,9 @@ namespace Webapp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int PersonId, [Bind("Id,FullName,Gender,Height,Weight")] Person person)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,FullName,Gender,Height,Weight")] Person person)
         {
-            if (PersonId != person.Id)
+            if (id != person.Id)
             {
                 return NotFound();
             }
@@ -189,15 +201,15 @@ namespace Webapp.Controllers
         }
 
         // GET: Olympics/Delete/5
-        public async Task<IActionResult> Delete(int? PersonId)
+        public async Task<IActionResult> Delete(int? id)
         {
-            if (PersonId == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
             var person = await _context.Persons
-                .FirstOrDefaultAsync(m => m.Id == PersonId);
+                .FirstOrDefaultAsync(m => m.Id == id);
             if (person == null)
             {
                 return NotFound();
@@ -209,9 +221,9 @@ namespace Webapp.Controllers
         // POST: Olympics/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int PersonId)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var person = await _context.Persons.FindAsync(PersonId);
+            var person = await _context.Persons.FindAsync(id);
             if (person != null)
             {
                 _context.Persons.Remove(person);

@@ -75,7 +75,7 @@ public class Program
 
         app.MapControllerRoute(
             name: "default",
-            pattern: "{controller=Home}/{action=Index}/{PersonId?}");
+            pattern: "{controller=Home}/{action=Index}/{id?}");
 
         app.Run();
     }

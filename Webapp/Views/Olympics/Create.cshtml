@@ -1,0 +1,41 @@
+﻿@model Webapp.Models.Olympics.CompetitorEventCreateModel
+
+@{
+    ViewData["Title"] = "Add Competitor Event";
+}
+
+<h1>Add Competitor Event</h1>
+<h4>Competitor Event for @Model.Person.FullName</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div class="form-group">
+                <label asp-for="SportName" class="control-label"></label>
+                <select asp-for="SportName" class="form-control" asp-items="Model.Sports"></select>
+                <span asp-validation-for="SportName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="EventName" class="control-label"></label>
+                <select asp-for="EventName" class="form-control" asp-items="Model.Events"></select>
+                <span asp-validation-for="EventName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="OlympicsName" class="control-label"></label>
+                <select asp-for="OlympicsName" class="form-control" asp-items="Model.Olympics"></select>
+                <span asp-validation-for="OlympicsName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary"/>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

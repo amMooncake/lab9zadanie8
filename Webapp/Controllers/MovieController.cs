@@ -31,15 +31,15 @@ namespace Webapp.Controllers
         }
 
         // GET: Movie/Details/5
-        public async Task<IActionResult> Details(int? PersonId)
+        public async Task<IActionResult> Details(int? id)
         {
-            if (PersonId == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
             var movie = await _context.Movies
-                .FirstOrDefaultAsync(m => m.MovieId == PersonId);
+                .FirstOrDefaultAsync(m => m.MovieId == id);
             if (movie == null)
             {
                 return NotFound();
@@ -71,14 +71,14 @@ namespace Webapp.Controllers
         }
 
         // GET: Movie/Edit/5
-        public async Task<IActionResult> Edit(int? PersonId)
+        public async Task<IActionResult> Edit(int? id)
         {
-            if (PersonId == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var movie = await _context.Movies.FindAsync(PersonId);
+            var movie = await _context.Movies.FindAsync(id);
             if (movie == null)
             {
                 return NotFound();
@@ -91,9 +91,9 @@ namespace Webapp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int PersonId, [Bind("MovieId,Title,Budget,Homepage,Overview,Popularity,ReleaseDate,Revenue,Runtime,MovieStatus,Tagline,VoteAverage,VoteCount")] Movie movie)
+        public async Task<IActionResult> Edit(int id, [Bind("MovieId,Title,Budget,Homepage,Overview,Popularity,ReleaseDate,Revenue,Runtime,MovieStatus,Tagline,VoteAverage,VoteCount")] Movie movie)
         {
-            if (PersonId != movie.MovieId)
+            if (id != movie.MovieId)
             {
                 return NotFound();
             }
@@ -122,15 +122,15 @@ namespace Webapp.Controllers
         }
 
         // GET: Movie/Delete/5
-        public async Task<IActionResult> Delete(int? PersonId)
+        public async Task<IActionResult> Delete(int? id)
         {
-            if (PersonId == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
             var movie = await _context.Movies
-                .FirstOrDefaultAsync(m => m.MovieId == PersonId);
+                .FirstOrDefaultAsync(m => m.MovieId == id);
             if (movie == null)
             {
                 return NotFound();
@@ -142,9 +142,9 @@ namespace Webapp.Controllers
         // POST: Movie/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int PersonId)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var movie = await _context.Movies.FindAsync(PersonId);
+            var movie = await _context.Movies.FindAsync(id);
             if (movie != null)
             {
                 _context.Movies.Remove(movie);
