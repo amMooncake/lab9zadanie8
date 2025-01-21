@@ -130,6 +130,7 @@ namespace Webapp.Controllers
             competitorEvent.Sports = _context.Sports
                 .Select(s => new SelectListItem
                 {
+                    
                     Value = s.SportName,
                     Text = s.SportName
                 }).ToList();
